@@ -10,51 +10,59 @@
             background-color: #000;
             color: white;
             font-family: Arial, sans-serif;
-            padding: 20px;
+            padding: 15px;
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
-        .logo { font-size: 28px; font-weight: bold; }
-        .disclaimer {
-            font-size: 12px;
-            max-width: 600px;
-            text-align: right;
-        }
+        .logo { font-size: 26px; font-weight: bold; }
+        .disclaimer { font-size: 11px; max-width: 500px; text-align: right; }
         .main-banner {
             background: linear-gradient(90deg, #5ec7e8, #b0d4dc);
-            padding: 25px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         .tournament-stages {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         .stage {
             background: linear-gradient(90deg, #5ec7e8, #b0d4dc);
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 15px;
         }
         .stage.selected {
             background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
             color: #000;
         }
+        .match-group {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        .match-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #5ec7e8;
+        }
         .match-container {
             display: flex;
             justify-content: space-between;
-            gap: 30px;
+            gap: 25px;
             flex-wrap: wrap;
         }
         .player-card {
@@ -62,36 +70,41 @@
             flex-direction: column;
             align-items: center;
             width: 30%;
-            min-width: 150px;
+            min-width: 140px;
         }
         .player-photo {
             width: 100%;
-            height: 250px;
+            height: 220px;
             background-color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
         }
         .player-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             text-transform: uppercase;
+            text-align: center;
         }
         .bet-options {
             flex-grow: 1;
             text-align: center;
-            min-width: 250px;
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .bet-option {
             background: rgba(94,199,232,0.2);
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 15px;
         }
         .bet-option.selected {
             background: rgba(94,199,232,0.6);
@@ -103,6 +116,7 @@
             background: rgba(255,107,107,0.2);
             border-radius: 5px;
             font-weight: bold;
+            text-align: center;
         }
         .bet-btn {
             background: #5ec7e8;
@@ -126,6 +140,7 @@
         @media (max-width: 768px) {
             .player-card { width: 100%; }
             .match-container { flex-direction: column; align-items: center; }
+            .bet-options { width: 100%; margin-top: 20px; }
         }
     </style>
 </head>
@@ -149,164 +164,148 @@
         <div class="stage" data-stage="T2">T2</div>
     </div>
 
-    <div class="match-container">
-        <div class="player-card">
-            <div class="player-photo" id="player1-photo">Фото</div>
-            <div class="player-name" id="player1-name">ЗАГРУЗКА...</div>
-        </div>
+    <!-- Сюда будет подставляться контент -->
+    <div id="matches-container"></div>
 
-        <div class="bet-options">
-            <div class="bet-option" data-outcome="Победа 1">ПОБЕДА 1/2</div>
-            <div class="bet-option" data-outcome="Первый удар 1">ПЕРВЫЙ УДАР 1/2</div>
-            <div class="bet-option" data-outcome="До минуты 1">ПЕРВЫЙ КТО ДОЙДЕТ ДО МИНУТЫ 1/2</div>
-            <div class="bet-option" data-outcome="Откроет счёт 1">ПЕРВЫЙ КТО ОТКРОЕТ СЧЁТ 1/2</div>
-
-            <div class="current-stage-info">
-                Стадия: <span id="selected-stage">T16</span>
-            </div>
-
-            <input type="number" id="bet-amount" placeholder="Сумма ставки (RUB)" min="10" style="width:100%; padding:10px; margin-top:15px;">
-            <button id="place-bet" class="bet-btn">СДЕЛАТЬ СТАВКУ</button>
-            <div id="message"></div>
-        </div>
-
-        <div class="player-card">
-            <div class="player-photo" id="player2-photo">Фото</div>
-            <div class="player-name" id="player2-name">ЗАГРУЗКА...</div>
-        </div>
+    <div class="current-stage-info">
+        Текущая стадия: <span id="selected-stage">T16</span>
     </div>
 
     <script>
-        // 🔴 ВАЖНО: ЗАМЕНИ ЭТОТ URL НА СВОЙ ИЗ RENDER!
+        // 🔴 ЗАМЕНИ НА СВОЙ РЕАЛЬНЫЙ URL!
         const API_URL = 'https://fencingbet-api.onrender.com/api/matches';
 
         let tournamentData = {};
         let currentStage = 'T16';
         let selectedOutcome = null;
 
-        // Загружаем данные с API
-        let autoUpdateInterval = null; // чтобы избежать дублирования
+        // Генерация HTML для одного боя
+        function renderMatch(matchData, matchIndex = null) {
+            const matchId = matchIndex !== null ? `match-${matchIndex}` : 'main-match';
+            const title = matchIndex !== null ? `БОЙ ${matchIndex + 1}` : '';
 
-async function loadMatches() {
-    try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Ошибка сети');
-        tournamentData = await response.json();
-        updateUI();
+            return `
+            <div class="match-group">
+                ${title ? `<div class="match-title">${title}</div>` : ''}
+                <div class="match-container">
+                    <div class="player-card">
+                        <div class="player-photo" id="${matchId}-p1-photo">Фото</div>
+                        <div class="player-name" id="${matchId}-p1-name">${matchData.player1.name || 'ИГРОК 1'}</div>
+                    </div>
 
-        // 🔁 Запускаем автообновление ТОЛЬКО ПОСЛЕ УСПЕШНОЙ ПЕРВОЙ ЗАГРУЗКИ
-        if (!autoUpdateInterval) {
-            autoUpdateInterval = setInterval(async () => {
-                try {
-                    const res = await fetch(API_URL);
-                    const data = await res.json();
-                    const stage = data[currentStage];
-                    if (stage) {
-                        document.getElementById('player1-name').textContent = stage.player1.name || 'ИГРОК 1';
-                        document.getElementById('player2-name').textContent = stage.player2.name || 'ИГРОК 2';
-                        // Опционально: обновить фото
-                        const p1 = document.getElementById('player1-photo');
-                        const p2 = document.getElementById('player2-photo');
-                        if (stage.player1.photo) {
-                            p1.style.backgroundImage = `url(${stage.player1.photo})`;
-                            p1.style.backgroundSize = 'cover';
-                            p1.textContent = '';
-                        }
-                        if (stage.player2.photo) {
-                            p2.style.backgroundImage = `url(${stage.player2.photo})`;
-                            p2.style.backgroundSize = 'cover';
-                            p2.textContent = '';
-                        }
-                    }
-                } catch (err) {
-                    console.warn('Не удалось обновить данные в фоне:', err);
-                }
-            }, 30000); // каждые 30 секунд
+                    <div class="bet-options">
+                        <div class="bet-option" data-outcome="Победа 1">ПОБЕДА 1/2</div>
+                        <div class="bet-option" data-outcome="Первый удар 1">ПЕРВЫЙ УДАР 1/2</div>
+                        <div class="bet-option" data-outcome="До минуты 1">ПЕРВЫЙ КТО ДОЙДЕТ ДО МИНУТЫ 1/2</div>
+                        <div class="bet-option" data-outcome="Откроет счёт 1">ПЕРВЫЙ КТО ОТКРОЕТ СЧЁТ 1/2</div>
+                    </div>
+
+                    <div class="player-card">
+                        <div class="player-photo" id="${matchId}-p2-photo">Фото</div>
+                        <div class="player-name" id="${matchId}-p2-name">${matchData.player2.name || 'ИГРОК 2'}</div>
+                    </div>
+                </div>
+            </div>
+            `;
         }
-    } catch (err) {
-        console.error('Не удалось загрузить данные:', err);
-        document.getElementById('player1-name').textContent = 'ОШИБКА ЗАГРУЗКИ';
-        document.getElementById('player2-name').textContent = 'ПРОВЕРЬТЕ СЕТЬ';
-    }
-}
 
+        // Обновление интерфейса
         function updateUI() {
-            const stage = tournamentData[currentStage];
-            if (!stage) return;
+            const stageData = tournamentData[currentStage];
+            const container = document.getElementById('matches-container');
 
-            document.getElementById('player1-name').textContent = stage.player1.name || 'ИГРОК 1';
-            document.getElementById('player2-name').textContent = stage.player2.name || 'ИГРОК 2';
-
-            const p1 = document.getElementById('player1-photo');
-            const p2 = document.getElementById('player2-photo');
-
-            if (stage.player1.photo) {
-                p1.style.backgroundImage = `url(${stage.player1.photo})`;
-                p1.style.backgroundSize = 'cover';
-                p1.style.backgroundPosition = 'center';
-                p1.textContent = '';
+            if (!stageData) {
+                container.innerHTML = '<div>Данные не загружены</div>';
+                return;
             }
 
-            if (stage.player2.photo) {
-                p2.style.backgroundImage = `url(${stage.player2.photo})`;
-                p2.style.backgroundSize = 'cover';
-                p2.style.backgroundPosition = 'center';
-                p2.textContent = '';
+            if (stageData.type === 'single') {
+                container.innerHTML = renderMatch(stageData.match);
+            } else if (stageData.type === 'double') {
+                container.innerHTML = stageData.matches.map((match, idx) => renderMatch(match, idx)).join('');
+            }
+
+            // Обновляем текст стадии
+            document.getElementById('selected-stage').textContent = currentStage;
+
+            // Перепривязываем события
+            rebindEvents();
+        }
+
+        function rebindEvents() {
+            // Ставки
+            document.querySelectorAll('.bet-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    document.querySelectorAll('.bet-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedOutcome = opt.dataset.outcome;
+                });
+            });
+
+            // Фото (если есть URL из API)
+            const stageData = tournamentData[currentStage];
+            if (stageData.type === 'single') {
+                updatePhoto('main-match-p1-photo', stageData.match.player1.photo);
+                updatePhoto('main-match-p2-photo', stageData.match.player2.photo);
+            } else if (stageData.type === 'double') {
+                stageData.matches.forEach((match, idx) => {
+                    updatePhoto(`match-${idx}-p1-photo`, match.player1.photo);
+                    updatePhoto(`match-${idx}-p2-photo`, match.player2.photo);
+                });
             }
         }
 
-        // Обработчики выбора стадии
+        function updatePhoto(photoId, url) {
+            const el = document.getElementById(photoId);
+            if (el && url) {
+                el.style.backgroundImage = `url(${url})`;
+                el.style.backgroundSize = 'cover';
+                el.style.backgroundPosition = 'center';
+                el.textContent = '';
+            }
+        }
+
+        // Загрузка данных
+        async function loadMatches() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Ошибка сети');
+                tournamentData = await response.json();
+                updateUI();
+            } catch (err) {
+                console.error('Ошибка загрузки:', err);
+                document.getElementById('matches-container').innerHTML = '<div style="color:red;text-align:center;">НЕ УДАЛОСЬ ЗАГРУЗИТЬ ДАННЫЕ</div>';
+            }
+        }
+
+        // Выбор стадии
         document.querySelectorAll('.stage').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.stage').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 currentStage = btn.dataset.stage;
-                document.getElementById('selected-stage').textContent = currentStage;
                 updateUI();
             });
         });
 
-        // Обработчики выбора ставки
-        document.querySelectorAll('.bet-option').forEach(opt => {
-            opt.addEventListener('click', () => {
-                document.querySelectorAll('.bet-option').forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                selectedOutcome = opt.dataset.outcome;
-            });
+        // Ставка (упрощённо — без привязки к конкретному бою)
+        document.body.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'place-bet') {
+                const amount = parseFloat(document.getElementById('bet-amount')?.value);
+                const msg = document.createElement('div');
+                msg.className = 'message error';
+                msg.textContent = 'Ставки пока недоступны (до 13.12.2025)';
+                document.getElementById('matches-container').appendChild(msg);
+                setTimeout(() => msg.remove(), 3000);
+            }
         });
 
-        // Обработка ставки
-        document.getElementById('place-bet').addEventListener('click', () => {
-            const amount = parseFloat(document.getElementById('bet-amount').value);
-            const msg = document.getElementById('message');
-            msg.className = 'message';
-
-            if (new Date() < new Date('2025-12-13')) {
-                msg.textContent = '⚠️ Ставки откроются 13.12.2025';
-                msg.classList.add('error');
-                return;
-            }
-
-            if (!selectedOutcome) {
-                msg.textContent = '❗ Выберите исход';
-                msg.classList.add('error');
-                return;
-            }
-
-            if (!amount || amount < 10) {
-                msg.textContent = '❗ Мин. ставка — 10 RUB';
-                msg.classList.add('error');
-                return;
-            }
-
-            msg.textContent = `✅ Ставка: ${selectedOutcome} (${currentStage}) — ${amount} RUB`;
-            msg.classList.add('success');
-            document.getElementById('bet-amount').value = '';
-        });
-
-        // Запуск
+        // Инициализация
         document.querySelector('.stage[data-stage="T16"]').classList.add('selected');
         loadMatches();
+
+        // Автообновление (опционально)
+        setInterval(loadMatches, 30000);
     </script>
 </body>
 </html>
