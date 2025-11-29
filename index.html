@@ -180,7 +180,6 @@
         <div class="stage" data-stage="T2">T2</div>
     </div>
 
-    <!-- Контейнер для боёв -->
     <div id="matches-container"></div>
 
     <div class="current-stage-info">
@@ -188,14 +187,12 @@
     </div>
 
     <script>
-        // 🔴 ОБЯЗАТЕЛЬНО: замени на свой URL из Render!
         const API_URL = 'https://fencingbet-api.onrender.com/api/matches';
 
         let tournamentData = {};
         let currentStage = 'T16';
-        let selectedOutcomePerMatch = {}; // { "main": "...", "0": "...", "1": "..." }
+        let selectedOutcomePerMatch = {};
 
-        // Генерация HTML для одного боя (с формой ставок)
         function renderMatch(matchData, matchKey) {
             const title = matchKey === 'main' ? '' : `БОЙ ${parseInt(matchKey) + 1}`;
             const formId = `form-${matchKey}`;
@@ -214,7 +211,6 @@
                         <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 1${outcomePrefix}">ПОБЕДА 1/2</div>
                         <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 1${outcomePrefix}">ПЕРВЫЙ УДАР 1/2</div>
                         <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 1${outcomePrefix}">ПЕРВЫЙ КТО ДОЙДЕТ ДО МИНУТЫ 1/2</div>
-                        <div class="bet-option" data-match="${matchKey}" data-outcome="Откроет счёт 1${outcomePrefix}">ПЕРВЫЙ КТО ОТКРОЕТ СЧЁТ 1/2</div>
 
                         <div class="bet-form">
                             <input type="number" id="amount-${matchKey}" placeholder="Сумма ставки (RUB)" min="10">
@@ -252,18 +248,15 @@
         }
 
         function rebindEvents() {
-            // Выбор исхода
             document.querySelectorAll('.bet-option').forEach(opt => {
                 opt.addEventListener('click', () => {
                     const matchKey = opt.dataset.match;
-                    // Снимаем выделение с других исходов этого боя
                     document.querySelectorAll(`.bet-option[data-match="${matchKey}"]`).forEach(o => o.classList.remove('selected'));
                     opt.classList.add('selected');
                     selectedOutcomePerMatch[matchKey] = opt.dataset.outcome;
                 });
             });
 
-            // Ставка
             document.querySelectorAll('.bet-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const matchKey = btn.dataset.match;
@@ -301,7 +294,6 @@
                 });
             });
 
-            // Обновление фото
             const stageData = tournamentData[currentStage];
             if (stageData.type === 'single') {
                 updatePhoto('main-p1-photo', stageData.match.player1.photo);
@@ -336,7 +328,6 @@
             }
         }
 
-        // Выбор стадии
         document.querySelectorAll('.stage').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.stage').forEach(b => b.classList.remove('selected'));
@@ -346,11 +337,8 @@
             });
         });
 
-        // Инициализация
         document.querySelector('.stage[data-stage="T16"]').classList.add('selected');
         loadMatches();
-
-        // Автообновление каждые 30 секунд
         setInterval(loadMatches, 30000);
     </script>
 </body>
