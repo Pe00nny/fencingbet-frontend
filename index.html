@@ -102,10 +102,10 @@
         .bet-option {
             background: rgba(94,199,232,0.2);
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
@@ -240,24 +240,36 @@
         let currentStage = 'T16';
         let selectedOutcomePerMatch = {};
 
-        // Генерация HTML для одного боя с коэффициентами
         function renderMatch(matchData, matchKey) {
             const title = matchKey === 'main' ? '' : `БОЙ ${parseInt(matchKey) + 1}`;
             const odds = matchData.odds || {};
+            const p1Name = matchData.player1?.name || 'ИГРОК 1';
+            const p2Name = matchData.player2?.name || 'ИГРОК 2';
 
-            // Формируем список исходов с кэфами
             const betOptionsHTML = `
-                <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 1">
-                    <span class="outcome-text">ПОБЕДА 1/2</span>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 1" data-odds="${odds["Победа 1"] || 1.00}">
+                    <span class="outcome-text">ПОБЕДА: ${p1Name}</span>
                     <span class="odds-value">${(odds["Победа 1"] || 1.00).toFixed(2)}</span>
                 </div>
-                <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 1">
-                    <span class="outcome-text">ПЕРВЫЙ УДАР 1/2</span>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 2" data-odds="${odds["Победа 2"] || 1.00}">
+                    <span class="outcome-text">ПОБЕДА: ${p2Name}</span>
+                    <span class="odds-value">${(odds["Победа 2"] || 1.00).toFixed(2)}</span>
+                </div>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 1" data-odds="${odds["Первый удар 1"] || 1.00}">
+                    <span class="outcome-text">ПЕРВЫЙ УДАР: ${p1Name}</span>
                     <span class="odds-value">${(odds["Первый удар 1"] || 1.00).toFixed(2)}</span>
                 </div>
-                <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 1">
-                    <span class="outcome-text">ПЕРВЫЙ КТО ДОЙДЕТ ДО МИНУТЫ 1/2</span>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 2" data-odds="${odds["Первый удар 2"] || 1.00}">
+                    <span class="outcome-text">ПЕРВЫЙ УДАР: ${p2Name}</span>
+                    <span class="odds-value">${(odds["Первый удар 2"] || 1.00).toFixed(2)}</span>
+                </div>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 1" data-odds="${odds["До минуты 1"] || 1.00}">
+                    <span class="outcome-text">ДО МИНУТЫ: ${p1Name}</span>
                     <span class="odds-value">${(odds["До минуты 1"] || 1.00).toFixed(2)}</span>
+                </div>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 2" data-odds="${odds["До минуты 2"] || 1.00}">
+                    <span class="outcome-text">ДО МИНУТЫ: ${p2Name}</span>
+                    <span class="odds-value">${(odds["До минуты 2"] || 1.00).toFixed(2)}</span>
                 </div>
             `;
 
@@ -267,7 +279,7 @@
                 <div class="match-container">
                     <div class="player-card">
                         <div class="player-photo" id="${matchKey}-p1-photo">Фото</div>
-                        <div class="player-name" id="${matchKey}-p1-name">${matchData.player1.name || 'ИГРОК 1'}</div>
+                        <div class="player-name">${p1Name}</div>
                     </div>
 
                     <div class="bet-options">
@@ -282,7 +294,7 @@
 
                     <div class="player-card">
                         <div class="player-photo" id="${matchKey}-p2-photo">Фото</div>
-                        <div class="player-name" id="${matchKey}-p2-name">${matchData.player2.name || 'ИГРОК 2'}</div>
+                        <div class="player-name">${p2Name}</div>
                     </div>
                 </div>
             </div>
@@ -326,7 +338,7 @@
                     const betAmount = parseFloat(amountEl.value);
 
                     messageEl.className = 'message';
-                    messageEl.textContent = '';
+                    messageEl.innerHTML = '';
 
                     const today = new Date();
                     const betOpenDate = new Date('2025-12-13');
@@ -343,24 +355,18 @@
                         return;
                     }
 
-                    // Рассчитываем выигрыш (опционально)
-                    const stageData = tournamentData[currentStage];
-                    let odds = 1.0;
-                    if (stageData.type === 'single') {
-                        odds = stageData.match.odds?.[selectedOutcomePerMatch[matchKey]] || 1.0;
-                    } else if (stageData.type === 'double') {
-                        const matchIndex = parseInt(matchKey);
-                        odds = stageData.matches[matchIndex]?.odds?.[selectedOutcomePerMatch[matchKey]] || 1.0;
-                    }
-
                     if (!betAmount || betAmount < 10) {
                         messageEl.textContent = '❗ Мин. ставка — 10 RUB';
                         messageEl.classList.add('error');
                         return;
                     }
 
+                    // Берём кэф из data-атрибута
+                    const selectedOption = document.querySelector(`.bet-option[data-match="${matchKey}"][data-outcome="${selectedOutcomePerMatch[matchKey]}"]`);
+                    const odds = parseFloat(selectedOption?.dataset.odds) || 1.0;
                     const potentialWin = (betAmount * odds).toFixed(2);
-                    messageEl.innerHTML = `✅ Ставка: ${selectedOutcomePerMatch[matchKey]}<br>Сумма: ${betAmount} RUB → Выигрыш: ${potentialWin} RUB`;
+
+                    messageEl.innerHTML = `✅ Ставка принята!<br>Выигрыш: ${potentialWin} RUB`;
                     messageEl.classList.add('success');
                     amountEl.value = '';
                 });
