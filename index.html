@@ -153,6 +153,27 @@
             font-weight: bold;
             text-align: center;
         }
+
+        /* 🔔 НОВОЕ: стиль для Telegram-баннера */
+        .telegram-promo {
+            text-align: center;
+            margin: 30px 0;
+            padding: 14px;
+            background: rgba(94, 199, 232, 0.15);
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 17px;
+            line-height: 1.4;
+        }
+        .telegram-promo a {
+            color: #5ec7e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .telegram-promo a:hover {
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
             .player-card { width: 100%; }
             .match-container { flex-direction: column; align-items: center; }
@@ -162,12 +183,11 @@
 </head>
 <body>
     <div class="header">
-    <div class="logo">FencingBet</div>
-    <div class="disclaimer">
-        *Азартные игры могут вызывать зависимость. FENCINGBET призывает к ответственному отношению к ставкам.<br>
-        <strong>Подписывайтесь на телеграм-канал <a href="https://t.me/FencingBet" target="_blank">@FencingBet</a></strong>
+        <div class="logo">FencingBet</div>
+        <div class="disclaimer">
+            *Азартные игры могут вызывать зависимость. FENCINGBET призывает к ответственному отношению к ставкам.
+        </div>
     </div>
-</div>
 
     <div class="main-banner">
         <h1>СТАВКИ БУДУТ ДОСТУПНЫ 13.12.2025 НА ПОЗДНЯКОВА!</h1>
@@ -183,6 +203,11 @@
 
     <div id="matches-container"></div>
 
+    <!-- 🔔 НОВОЕ: Telegram-призыв -->
+    <div class="telegram-promo">
+        Подписывайтесь на телеграм-канал <a href="https://t.me/FencingBet" target="_blank">@FencingBet</a>
+    </div>
+
     <div class="current-stage-info">
         Выбрана стадия: <span id="selected-stage">T16</span>
     </div>
@@ -196,7 +221,6 @@
 
         function renderMatch(matchData, matchKey) {
             const title = matchKey === 'main' ? '' : `БОЙ ${parseInt(matchKey) + 1}`;
-            const formId = `form-${matchKey}`;
             const outcomePrefix = matchKey === 'main' ? '' : ` (Бой ${parseInt(matchKey) + 1})`;
 
             return `
@@ -344,4 +368,3 @@
     </script>
 </body>
 </html>
-
