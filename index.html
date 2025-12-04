@@ -101,11 +101,27 @@
         }
         .bet-option {
             background: rgba(94,199,232,0.2);
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bet-option .outcome-text {
+            text-align: left;
+        }
+        .bet-option .odds-value {
+            background: #5ec7e8;
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
         }
         .bet-option.selected {
             background: rgba(94,199,232,0.6);
@@ -154,7 +170,6 @@
             text-align: center;
         }
 
-        /* 🔔 НОВОЕ: стиль для Telegram-баннера */
         .telegram-promo {
             text-align: center;
             margin: 30px 0;
@@ -178,6 +193,13 @@
             .player-card { width: 100%; }
             .match-container { flex-direction: column; align-items: center; }
             .bet-options { width: 100%; margin-top: 20px; }
+            .bet-option {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .odds-value {
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
@@ -203,7 +225,6 @@
 
     <div id="matches-container"></div>
 
-    <!-- 🔔 НОВОЕ: Telegram-призыв -->
     <div class="telegram-promo">
         Подписывайтесь на телеграм-канал <a href="https://t.me/FencingBet" target="_blank">@FencingBet</a>
     </div>
@@ -219,9 +240,26 @@
         let currentStage = 'T16';
         let selectedOutcomePerMatch = {};
 
+        // Генерация HTML для одного боя с коэффициентами
         function renderMatch(matchData, matchKey) {
             const title = matchKey === 'main' ? '' : `БОЙ ${parseInt(matchKey) + 1}`;
-            const outcomePrefix = matchKey === 'main' ? '' : ` (Бой ${parseInt(matchKey) + 1})`;
+            const odds = matchData.odds || {};
+
+            // Формируем список исходов с кэфами
+            const betOptionsHTML = `
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 1">
+                    <span class="outcome-text">ПОБЕДА 1/2</span>
+                    <span class="odds-value">${(odds["Победа 1"] || 1.00).toFixed(2)}</span>
+                </div>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 1">
+                    <span class="outcome-text">ПЕРВЫЙ УДАР 1/2</span>
+                    <span class="odds-value">${(odds["Первый удар 1"] || 1.00).toFixed(2)}</span>
+                </div>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 1">
+                    <span class="outcome-text">ПЕРВЫЙ КТО ДОЙДЕТ ДО МИНУТЫ 1/2</span>
+                    <span class="odds-value">${(odds["До минуты 1"] || 1.00).toFixed(2)}</span>
+                </div>
+            `;
 
             return `
             <div class="match-group">
@@ -233,9 +271,7 @@
                     </div>
 
                     <div class="bet-options">
-                        <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 1${outcomePrefix}">ПОБЕДА 1/2</div>
-                        <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 1${outcomePrefix}">ПЕРВЫЙ УДАР 1/2</div>
-                        <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 1${outcomePrefix}">ПЕРВЫЙ КТО ДОЙДЕТ ДО МИНУТЫ 1/2</div>
+                        ${betOptionsHTML}
 
                         <div class="bet-form">
                             <input type="number" id="amount-${matchKey}" placeholder="Сумма ставки (RUB)" min="10">
@@ -307,18 +343,30 @@
                         return;
                     }
 
+                    // Рассчитываем выигрыш (опционально)
+                    const stageData = tournamentData[currentStage];
+                    let odds = 1.0;
+                    if (stageData.type === 'single') {
+                        odds = stageData.match.odds?.[selectedOutcomePerMatch[matchKey]] || 1.0;
+                    } else if (stageData.type === 'double') {
+                        const matchIndex = parseInt(matchKey);
+                        odds = stageData.matches[matchIndex]?.odds?.[selectedOutcomePerMatch[matchKey]] || 1.0;
+                    }
+
                     if (!betAmount || betAmount < 10) {
                         messageEl.textContent = '❗ Мин. ставка — 10 RUB';
                         messageEl.classList.add('error');
                         return;
                     }
 
-                    messageEl.textContent = `✅ Ставка: ${selectedOutcomePerMatch[matchKey]} — ${betAmount} RUB`;
+                    const potentialWin = (betAmount * odds).toFixed(2);
+                    messageEl.innerHTML = `✅ Ставка: ${selectedOutcomePerMatch[matchKey]}<br>Сумма: ${betAmount} RUB → Выигрыш: ${potentialWin} RUB`;
                     messageEl.classList.add('success');
                     amountEl.value = '';
                 });
             });
 
+            // Обновление фото
             const stageData = tournamentData[currentStage];
             if (stageData.type === 'single') {
                 updatePhoto('main-p1-photo', stageData.match.player1.photo);
