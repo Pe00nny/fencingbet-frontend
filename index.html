@@ -212,8 +212,8 @@
     </div>
 
     <div class="main-banner">
-        <h1>СТАВКИ БУДУТ ДОСТУПНЫ 13.12.2025 НА ПОЗДНЯКОВА!</h1>
-        <p>СЛЕДИТЕ ЗА ОБНОВЛЕНИЯМИ</p>
+        <h1>FENCING BET</h1>
+        <p>ДЕЛАЙТЕ СТАВКИ НА БОИ</p>
     </div>
 
     <div class="tournament-stages">
@@ -334,45 +334,88 @@
                 btn.addEventListener('click', () => {
                     const matchKey = btn.dataset.match;
                     const amountEl = document.getElementById(`amount-${matchKey}`);
-                    const messageEl = document.getElementById(`message-${matchKey}`);
                     const betAmount = parseFloat(amountEl.value);
 
-                    messageEl.className = 'message';
-                    messageEl.innerHTML = '';
-
-                    const today = new Date();
-                    const betOpenDate = new Date('2025-12-13');
-
-                    if (today < betOpenDate) {
-                        messageEl.textContent = '⚠️ Ставки откроются 13.12.2025';
-                        messageEl.classList.add('error');
-                        return;
-                    }
-
-                    if (!selectedOutcomePerMatch[matchKey]) {
-                        messageEl.textContent = '❗ Выберите исход';
-                        messageEl.classList.add('error');
-                        return;
-                    }
-
                     if (!betAmount || betAmount < 10) {
+                        const messageEl = document.getElementById(`message-${matchKey}`);
+                        messageEl.className = 'message error';
                         messageEl.textContent = '❗ Мин. ставка — 10 RUB';
-                        messageEl.classList.add('error');
                         return;
                     }
 
-                    // Берём кэф из data-атрибута
-                    const selectedOption = document.querySelector(`.bet-option[data-match="${matchKey}"][data-outcome="${selectedOutcomePerMatch[matchKey]}"]`);
-                    const odds = parseFloat(selectedOption?.dataset.odds) || 1.0;
-                    const potentialWin = (betAmount * odds).toFixed(2);
+                    const paymentHtml = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата ставки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .payment-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 15px 0;
+        }
+        .phone {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 15px 0;
+            color: #2c3e50;
+        }
+        .warning {
+            background: #fff8e1;
+            padding: 12px;
+            border-left: 4px solid #ffc107;
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-box">
+        <h2>Оплата ставки</h2>
+        <div class="amount">${betAmount} RUB</div>
+        <p>Переведите сумму через Т‑Банк на номер:</p>
+        <div class="phone">+7 913 929-68-76</div>
+        <div class="warning">
+            ⚠️ <strong>Внимание!</strong> Ставки принимаются строго по указанным данным на сайте. 
+            После перевода сохраните чек и свяжитесь с организатором.
+        </div>
+    </div>
+</body>
+</html>
+                    `;
 
-                    messageEl.innerHTML = `✅ Ставка принята!<br>Выигрыш: ${potentialWin} RUB`;
-                    messageEl.classList.add('success');
-                    amountEl.value = '';
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(paymentHtml);
+                    newWindow.document.close();
                 });
             });
 
-            // Обновление фото
             const stageData = tournamentData[currentStage];
             if (stageData.type === 'single') {
                 updatePhoto('main-p1-photo', stageData.match.player1.photo);
