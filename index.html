@@ -6,7 +6,473 @@
     <title>FencingBet</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FencingBet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 15px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo { font-size: 26px; font-weight: bold; }
+        .disclaimer { font-size: 11px; max-width: 500px; text-align: right; }
+        .main-banner {
+            background: linear-gradient(90deg, #5ec7e8, #b0d4dc);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .tournament-stages {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .stage {
+            background: linear-gradient(90deg, #5ec7e8, #b0d4dc);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .stage.selected {
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+            color: #000;
+        }
+        .match-group {
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #333;
+        }
+        .match-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #5ec7e8;
+            font-size: 18px;
+        }
+        .match-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .player-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+            min-width: 140px;
+        }
+        .player-photo {
+            width: 100%;
+            height: 200px;
+            background-color: #333;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #666;
+        }
+        .player-name {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .bet-options {
+            flex-grow: 1;
+            text-align: center;
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .bet-option {
+            background: rgba(94,199,232,0.2);
+            padding: 14px;
+            margin: 12px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bet-option .outcome-text {
+            text-align: left;
+        }
+        .bet-option .odds-value {
+            background: #5ec7e8;
+            color: #000;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        .bet-option.selected {
+            background: rgba(94,199,232,0.6);
+            border: 2px solid #5ec7e8;
+        }
+        .bet-form {
+            margin-top: 25px;
+        }
+        .bet-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: none;
+            font-size: 16px;
+        }
+        .bet-btn {
+            background: #5ec7e8;
+            color: #000;
+            font-weight: bold;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 12px;
+            cursor: pointer;
+            font-size: 17px;
+        }
+        .bet-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .message.error { background: rgba(255,0,0,0.2); color: #ff9999; }
+        .message.success { background: rgba(0,255,0,0.2); color: #99ff99; }
+        .current-stage-info {
+            margin-top: 20px;
+            padding: 8px;
+            background: rgba(255,107,107,0.2);
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .telegram-promo {
+            text-align: center;
+            margin: 30px 0;
+            padding: 14px;
+            background: rgba(94, 199, 232, 0.15);
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 17px;
+            line-height: 1.4;
+        }
+        .telegram-promo a {
+            color: #5ec7e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .telegram-promo a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .player-card { width: 100%; }
+            .match-container { flex-direction: column; align-items: center; }
+            .bet-options { width: 100%; margin-top: 20px; }
+            .bet-option {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .odds-value {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">FencingBet</div>
+        <div class="disclaimer">
+            *Азартные игры могут вызывать зависимость. FENCINGBET призывает к ответственному отношению к ставкам.
+        </div>
+    </div>
+
+    <div class="main-banner">
+        <h1>FENCING BET</h1>
+        <p>СТАВКИ НА ПОБЕДУ В БОЮ</p>
+    </div>
+
+    <div class="tournament-stages">
+        <div class="stage" data-stage="T16">T16</div>
+        <div class="stage" data-stage="T8">T8</div>
+        <div class="stage" data-stage="T4">T4</div>
+        <div class="stage" data-stage="T2">T2</div>
+    </div>
+
+    <div id="matches-container"></div>
+
+    <div class="telegram-promo">
+        Подписывайтесь на телеграм-канал <a href="https://t.me/FencingBet" target="_blank">@FencingBet</a>
+    </div>
+
+    <div class="current-stage-info">
+        Выбрана стадия: <span id="selected-stage">T16</span>
+    </div>
+
+    <script>
+        const API_URL = 'https://fencingbet-api.onrender.com/api/matches';
+
+        let tournamentData = {};
+        let currentStage = 'T16';
+        let selectedOutcomePerMatch = {};
+
+        function renderMatch(matchData, matchKey) {
+            const title = matchKey === 'main' ? '' : `БОЙ ${parseInt(matchKey) + 1}`;
+            const odds = matchData.odds || {};
+            const p1Name = matchData.player1?.name || 'ИГРОК 1';
+            const p2Name = matchData.player2?.name || 'ИГРОК 2';
+
+            let betOptionsHTML = `
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 1" data-odds="${odds["Победа 1"] || 1.00}">
+                    <span class="outcome-text">ПОБЕДА: ${p1Name}</span>
+                    <span class="odds-value">${(odds["Победа 1"] || 1.00).toFixed(2)}</span>
+                </div>
+                <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 2" data-odds="${odds["Победа 2"] || 1.00}">
+                    <span class="outcome-text">ПОБЕДА: ${p2Name}</span>
+                    <span class="odds-value">${(odds["Победа 2"] || 1.00).toFixed(2)}</span>
+                </div>
+            `;
+
+            // ✅ Добавляем ставку "До половины" ТОЛЬКО в финале (T2)
+            if (currentStage === 'T2') {
+                betOptionsHTML += `
+                    <div class="bet-option" data-match="${matchKey}" data-outcome="До половины 1" data-odds="${odds["До половины 1"] || 1.00}">
+                        <span class="outcome-text">ПЕРВЫМ ДО ПОЛОВИНЫ: ${p1Name}</span>
+                        <span class="odds-value">${(odds["До половины 1"] || 1.00).toFixed(2)}</span>
+                    </div>
+                    <div class="bet-option" data-match="${matchKey}" data-outcome="До половины 2" data-odds="${odds["До половины 2"] || 1.00}">
+                        <span class="outcome-text">ПЕРВЫМ ДО ПОЛОВИНЫ: ${p2Name}</span>
+                        <span class="odds-value">${(odds["До половины 2"] || 1.00).toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            return `
+            <div class="match-group">
+                ${title ? `<div class="match-title">${title}</div>` : ''}
+                <div class="match-container">
+                    <div class="player-card">
+                        <div class="player-photo" id="${matchKey}-p1-photo">Фото</div>
+                        <div class="player-name">${p1Name}</div>
+                    </div>
+
+                    <div class="bet-options">
+                        ${betOptionsHTML}
+
+                        <div class="bet-form">
+                            <input type="number" id="amount-${matchKey}" placeholder="Сумма ставки (RUB)" min="10">
+                            <button class="bet-btn" data-match="${matchKey}">СДЕЛАТЬ СТАВКУ</button>
+                            <div id="message-${matchKey}" class="message"></div>
+                        </div>
+                    </div>
+
+                    <div class="player-card">
+                        <div class="player-photo" id="${matchKey}-p2-photo">Фото</div>
+                        <div class="player-name">${p2Name}</div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function updateUI() {
+            const stageData = tournamentData[currentStage];
+            const container = document.getElementById('matches-container');
+
+            if (!stageData) {
+                container.innerHTML = '<div>Данные не загружены</div>';
+                return;
+            }
+
+            if (stageData.type === 'single') {
+                container.innerHTML = renderMatch(stageData.match, 'main');
+            } else if (stageData.type === 'double') {
+                container.innerHTML = stageData.matches.map((match, idx) => renderMatch(match, idx)).join('');
+            }
+
+            document.getElementById('selected-stage').textContent = currentStage;
+            rebindEvents();
+        }
+
+        function rebindEvents() {
+            document.querySelectorAll('.bet-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const matchKey = opt.dataset.match;
+                    document.querySelectorAll(`.bet-option[data-match="${matchKey}"]`).forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedOutcomePerMatch[matchKey] = opt.dataset.outcome;
+                });
+            });
+
+            document.querySelectorAll('.bet-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const matchKey = btn.dataset.match;
+                    const amountEl = document.getElementById(`amount-${matchKey}`);
+                    const betAmount = parseFloat(amountEl.value);
+
+                    if (!betAmount || betAmount < 10) {
+                        const messageEl = document.getElementById(`message-${matchKey}`);
+                        messageEl.className = 'message error';
+                        messageEl.textContent = '❗ Мин. ставка — 10 RUB';
+                        return;
+                    }
+
+                    const paymentHtml = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата ставки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .payment-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .amount {
+            font-size: 26px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 20px 0;
+        }
+        .card {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            color: #2c3e50;
+        }
+        .warning {
+            background: #fff8e1;
+            padding: 14px;
+            border-left: 4px solid #ffc107;
+            margin-top: 25px;
+            font-size: 15px;
+            text-align: left;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-box">
+        <h2>Оплата ставки</h2>
+        <div class="amount">${betAmount} RUB</div>
+        <p>Переведите сумму на карту Т‑Банка:</p>
+        <div class="card">2200 7020 0530 8668</div>
+        <div class="warning">
+            ⚠️ <strong>Внимание!</strong> Ставки принимаются строго по указанным данным на сайте. 
+            После перевода сохраните чек и свяжитесь с организатором.
+        </div>
+    </div>
+</body>
+</html>
+                    `;
+
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(paymentHtml);
+                    newWindow.document.close();
+                });
+            });
+
+            const stageData = tournamentData[currentStage];
+            if (stageData.type === 'single') {
+                updatePhoto('main-p1-photo', stageData.match.player1.photo);
+                updatePhoto('main-p2-photo', stageData.match.player2.photo);
+            } else if (stageData.type === 'double') {
+                stageData.matches.forEach((match, idx) => {
+                    updatePhoto(`${idx}-p1-photo`, match.player1.photo);
+                    updatePhoto(`${idx}-p2-photo`, match.player2.photo);
+                });
+            }
+        }
+
+        function updatePhoto(photoId, url) {
+            const el = document.getElementById(photoId);
+            if (el && url) {
+                el.style.backgroundImage = `url(${url})`;
+                el.style.backgroundSize = 'cover';
+                el.style.backgroundPosition = 'center';
+                el.textContent = '';
+            }
+        }
+
+        async function loadMatches() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Ошибка сети');
+                tournamentData = await response.json();
+                updateUI();
+            } catch (err) {
+                console.error('Ошибка загрузки:', err);
+                document.getElementById('matches-container').innerHTML = '<div style="color:red;text-align:center;">НЕ УДАЛОСЬ ЗАГРУЗИТЬ ДАННЫЕ</div>';
+            }
+        }
+
+        document.querySelectorAll('.stage').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.stage').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                currentStage = btn.dataset.stage;
+                updateUI();
+            });
+        });
+
+        document.querySelector('.stage[data-stage="T16"]').classList.add('selected');
+        loadMatches();
+        setInterval(loadMatches, 30000);
+    </script>
+</body>
+</html>
             background-color: #000;
             color: white;
             font-family: Arial, sans-serif;
@@ -451,3 +917,4 @@
     </script>
 </body>
 </html>
+
