@@ -101,11 +101,11 @@
         }
         .bet-option {
             background: rgba(94,199,232,0.2);
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
+            padding: 14px;
+            margin: 12px 0;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
@@ -117,10 +117,10 @@
         .bet-option .odds-value {
             background: #5ec7e8;
             color: #000;
-            padding: 4px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-weight: bold;
-            min-width: 50px;
+            min-width: 60px;
             text-align: center;
         }
         .bet-option.selected {
@@ -128,26 +128,27 @@
             border: 2px solid #5ec7e8;
         }
         .bet-form {
-            margin-top: 20px;
+            margin-top: 25px;
         }
         .bet-form input {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 5px;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
             border: none;
+            font-size: 16px;
         }
         .bet-btn {
             background: #5ec7e8;
             color: #000;
             font-weight: bold;
-            padding: 10px;
+            padding: 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 17px;
         }
         .bet-btn:disabled {
             background: #555;
@@ -213,7 +214,7 @@
 
     <div class="main-banner">
         <h1>FENCING BET</h1>
-        <p>ДЕЛАЙТЕ СТАВКИ НА БОИ</p>
+        <p>СТАВКИ НА ПОБЕДУ В БОЮ</p>
     </div>
 
     <div class="tournament-stages">
@@ -254,22 +255,6 @@
                 <div class="bet-option" data-match="${matchKey}" data-outcome="Победа 2" data-odds="${odds["Победа 2"] || 1.00}">
                     <span class="outcome-text">ПОБЕДА: ${p2Name}</span>
                     <span class="odds-value">${(odds["Победа 2"] || 1.00).toFixed(2)}</span>
-                </div>
-                <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 1" data-odds="${odds["Первый удар 1"] || 1.00}">
-                    <span class="outcome-text">ПЕРВЫЙ УДАР: ${p1Name}</span>
-                    <span class="odds-value">${(odds["Первый удар 1"] || 1.00).toFixed(2)}</span>
-                </div>
-                <div class="bet-option" data-match="${matchKey}" data-outcome="Первый удар 2" data-odds="${odds["Первый удар 2"] || 1.00}">
-                    <span class="outcome-text">ПЕРВЫЙ УДАР: ${p2Name}</span>
-                    <span class="odds-value">${(odds["Первый удар 2"] || 1.00).toFixed(2)}</span>
-                </div>
-                <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 1" data-odds="${odds["До минуты 1"] || 1.00}">
-                    <span class="outcome-text">ДО МИНУТЫ: ${p1Name}</span>
-                    <span class="odds-value">${(odds["До минуты 1"] || 1.00).toFixed(2)}</span>
-                </div>
-                <div class="bet-option" data-match="${matchKey}" data-outcome="До минуты 2" data-odds="${odds["До минуты 2"] || 1.00}">
-                    <span class="outcome-text">ДО МИНУТЫ: ${p2Name}</span>
-                    <span class="odds-value">${(odds["До минуты 2"] || 1.00).toFixed(2)}</span>
                 </div>
             `;
 
@@ -373,13 +358,13 @@
             color: #2c3e50;
         }
         .amount {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
             color: #e74c3c;
-            margin: 15px 0;
+            margin: 20px 0;
         }
         .phone {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             letter-spacing: 1px;
             margin: 15px 0;
@@ -387,17 +372,18 @@
         }
         .warning {
             background: #fff8e1;
-            padding: 12px;
+            padding: 14px;
             border-left: 4px solid #ffc107;
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 25px;
+            font-size: 15px;
             text-align: left;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
     <div class="payment-box">
-        <h2>Оплата ставки</h2>
+        <h2>Оплата ставки на победу</h2>
         <div class="amount">${betAmount} RUB</div>
         <p>Переведите сумму через Т‑Банк на номер:</p>
         <div class="phone">+7 913 929-68-76</div>
